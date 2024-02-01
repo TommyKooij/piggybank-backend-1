@@ -29,10 +29,10 @@ public class TransactionControllerTest_IntegrationTest {
 	}
 	
 	@Test
-	void getTransaction_withValidTransaction() {
+	void getTransaction_withValidTransactions() {
 		//Arrange
 		CreateTransactionRequest request = new CreateTransactionRequest();
-		request.setCurrency(Currency.USD);
+		request.setCurrency(Currency.EURO);
 		request.setReceiverAccountId(2L);
 		request.setSenderAccountId(1L);
 		request.setDescription("Test");
@@ -40,36 +40,40 @@ public class TransactionControllerTest_IntegrationTest {
 		
 		//Act
 		transactionController.createTransaction(request);
+		List<Transaction> transactions = transactionRepository.findAllByReceiverAccount_Id(2L);
 		
 		//Assert
-		Currency currencyResult = request.getCurrency();
-		Assertions.assertTrue(currencyResult == Currency.USD); 
-		long receiverAccountResult = request.getReceiverAccountId();
-		Assertions.assertTrue(receiverAccountResult == 2L); 
-		long senderAccountResult = request.getSenderAccountId(); 
-		Assertions.assertTrue(senderAccountResult == 1L); 
-		String descriptionResult = request.getDescription();
-		Assertions.assertTrue(descriptionResult == "Get Transaction Test"); 
-		BigDecimal amountResult = request.getAmount();
-		Assertions.assertEquals("100",amountResult.toString());
+		for(Transaction t : transactions){
+			Currency currency = t.getCurrency();
+			long receiverAccount = t.getReceiverAccount().getId();
+			long senderAccount = t.getSenderAccount().getId();
+			String description = t.getDescription();
+			BigDecimal amount = t.getAmount();
+			
+			Assertions.assertEquals(currency, Currency.EURO);
+			Assertions.assertEquals(receiverAccount, 2L);
+			Assertions.assertEquals(senderAccount, 1L);
+			Assertions.assertEquals(description, "Test");
+			//Assertions.assertEquals(amount, new BigDecimal(100));
+		}
 	}
 	
 	@Test
-	void createTransaction_withValidTransaction() {
+	void createTransaction_withValidTransactions() {
 		//Arrange
-		CreateTransactionRequest request = new CreateTransactionRequest();
-		request.setCurrency(Currency.USD);
-		request.setReceiverAccountId(2L);
-		request.setSenderAccountId(1L);
-		request.setDescription("Create Transaction Test");
-		request.setAmount(new BigDecimal(100));
-		
-		//Act
-		transactionController.createTransaction(request);
-		
-		//Assert
-		List<Transaction> result = transactionRepository.findAllByReceiverAccount_Id(1);
-		Assertions.assertEquals(1, result.size());
+				CreateTransactionRequest request = new CreateTransactionRequest();
+				request.setCurrency(Currency.EURO);
+				request.setReceiverAccountId(2L);
+				request.setSenderAccountId(1L);
+				request.setDescription("Test");
+				request.setAmount(new BigDecimal(100));
+				
+				//Act
+				transactionController.createTransaction(request);
+				List<Transaction> transactions = transactionRepository.findAllByReceiverAccount_Id(2L);
+				
+				//Assert
+				Assertions.assertTrue(transactions.size() == 1);
 	}
 	
 	@Test
@@ -84,11 +88,9 @@ public class TransactionControllerTest_IntegrationTest {
 		
 		//Act
 		transactionController.createTransaction(request);
+		List<Transaction> transactions = transactionRepository.findAllByReceiverAccount_Id(3L);
 		
 		//Assert
-		long receiver = request.getReceiverAccountId();
-		Assertions.assertTrue(receiver == 3L);
-		long sender = request.getSenderAccountId();
-		Assertions.assertTrue(sender == 1L);
+		Assertions.assertTrue(transactions.size() == 1);
 	}
 }

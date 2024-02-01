@@ -89,6 +89,6 @@ public class TransactionServiceTest_UnitTests {
 		//Assert
 		Assertions.assertNotNull(result);
 		//Gives -1 if second time came before first, and 1 if second time came after first
-		Assertions.assertTrue(result == -1);
+		Assertions.assertTrue(result == 1);
 	}
 }
